@@ -1,0 +1,355 @@
+Admin UI – Documentation
+
+Module: Doctor Appointment System – Admin Interface
+Tech Stack: React.js, Axios, Context API, React Router DOM, Bootstrap
+Role: Admin (Protected Access)
+
+🔥 1. Overview
+
+The Admin UI is designed for clinic/hospital administrators to manage the entire doctor appointment system.
+
+The Admin panel allows:
+
+Managing doctors
+
+Viewing users
+
+Monitoring all appointments
+
+Approving/rejecting appointments
+
+Dashboard analytics
+
+Admin login & profile management
+
+Admin has full control of the platform.
+
+Admin uses separate UI, separate login, and separate protected routes.
+
+🗂️ 2. Folder Structure (Admin UI)
+frontend-admin/
+│── public/
+│── src/
+│   ├── api/
+│   │   └── axios.js
+│   │
+│   ├── components/
+│   │   ├── Sidebar.js
+│   │   ├── Header.js
+│   │   └── ProtectedAdmin.js
+│   │
+│   ├── pages/
+│   │   ├── AdminLogin.js
+│   │   ├── Dashboard.js
+│   │   ├── ManageDoctors.js
+│   │   ├── AddDoctor.js
+│   │   ├── EditDoctor.js
+│   │   ├── UsersList.js
+│   │   ├── AppointmentsList.js
+│   │   └── AdminProfile.js
+│   │
+│   ├── context/
+│   │   └── AdminAuthContext.js
+│   │
+│   ├── utils/
+│   │   └── storage.js
+│   │
+│   ├── styles/
+│   │   └── admin.css
+│   │
+│   ├── App.js
+│   └── index.js
+│
+└── package.json
+
+🎯 3. Key Features in Admin UI
+🔐 Authentication
+
+Admin Login
+
+JWT token stored in localStorage
+
+Protected admin-only routes
+
+📊 Dashboard
+
+Total Users
+
+Total Doctors
+
+Total Appointments
+
+Today’s Appointments
+
+🧑‍⚕️ Doctor Management
+
+View all doctors
+
+Add new doctor
+
+Edit doctor details
+
+Delete doctor
+
+👥 User Management
+
+View all registered users
+
+View their basic details
+
+📅 Appointment Management
+
+View all appointments
+
+Approve appointment
+
+Reject appointment
+
+See user & doctor linked details
+
+👤 Admin Profile
+
+View admin details
+
+Update password
+
+Update email
+
+⚙️ 4. Module Breakdown
+4.1 Axios Setup
+
+📌 File: api/axios.js
+
+Purpose:
+
+Base API URL
+
+Auto token attach in headers
+
+4.2 AdminAuthContext
+
+📌 File: context/AdminAuthContext.js
+
+Handles:
+
+Admin login
+
+Admin logout
+
+Token storage
+
+Auth check (isAdminAuthenticated)
+
+4.3 ProtectedAdmin Component
+
+📌 File: components/ProtectedAdmin.js
+
+Purpose:
+
+Restrict pages only to authenticated admins
+
+Redirect unauthorized access to /admin/login
+
+4.4 Sidebar Component
+
+📌 File: components/Sidebar.js
+
+Contains links:
+
+Dashboard
+
+Manage Doctors
+
+Users
+
+Appointments
+
+Profile
+
+Logout
+
+4.5 Header Component
+
+📌 Displays:
+
+Admin Name
+
+Quick actions
+
+Breadcrumb title
+
+🏠 5. Pages Documentation
+5.1 AdminLogin.js
+Description:
+
+Simple login page
+
+Form: email + password
+
+Sends request to /api/admin/login
+
+On success: save JWT & redirect to Dashboard
+
+5.2 Dashboard.js
+Displays analytics:
+
+Total Doctors
+
+Total Users
+
+Total Appointments
+
+Pending Appointments
+
+API:
+GET /api/admin/dashboard
+
+5.3 ManageDoctors.js
+Shows:
+
+List of all doctors
+
+Table format
+
+Buttons:
+
+Edit
+
+Delete
+
+Add Doctor
+
+API:
+GET /api/admin/doctors
+DELETE /api/admin/doctor/:id
+
+5.4 AddDoctor.js
+Inputs:
+
+Name
+
+Email
+
+Specialization
+
+Experience
+
+Availability
+
+Fees
+
+Image Upload
+
+API:
+POST /api/admin/doctor
+
+5.5 EditDoctor.js
+Description:
+
+Same form as AddDoctor
+
+Pre-filled input fields
+
+After editing → update
+
+API:
+PUT /api/admin/doctor/:id
+
+5.6 UsersList.js
+Displays:
+
+All registered users
+
+Basic details
+
+Helps admin understand user base
+
+API:
+GET /api/admin/users
+
+5.7 AppointmentsList.js
+Displays:
+
+All appointments in the entire platform
+
+Shows:
+
+User name
+
+Doctor name
+
+Date
+
+Time
+
+Status
+
+Admin Actions:
+
+Approve
+
+Reject
+
+API:
+GET /api/admin/appointments
+PUT /api/admin/appointment/approve/:id
+PUT /api/admin/appointment/reject/:id
+
+5.8 AdminProfile.js
+Shows:
+
+Admin details (name/email)
+
+Allows:
+
+Update email
+
+Update password
+
+API:
+GET /api/admin/profile
+PUT /api/admin/profile
+
+🔄 6. API Summary (Admin UI)
+Feature	API Endpoint	Method
+Admin Login	/api/admin/login	POST
+Dashboard	/api/admin/dashboard	GET
+All Doctors	/api/admin/doctors	GET
+Add Doctor	/api/admin/doctor	POST
+Update Doctor	/api/admin/doctor/:id	PUT
+Delete Doctor	/api/admin/doctor/:id	DELETE
+All Users	/api/admin/users	GET
+All Appointments	/api/admin/appointments	GET
+Approve Appointment	/api/admin/appointment/approve/:id	PUT
+Reject Appointment	/api/admin/appointment/reject/:id	PUT
+Admin Profile	/api/admin/profile	GET / PUT
+🎨 7. UI/UX Recommendations
+
+Use a sidebar layout for easy navigation
+
+Use Bootstrap cards for Dashboard stats
+
+Use tables for:
+
+Doctors
+
+Users
+
+Appointments
+
+Add toast notifications for admin actions
+
+Keep UI minimal and clean
+
+🔐 8. Authentication Workflow (Admin)
+
+1️⃣ Admin enters credentials
+2️⃣ Backend verifies admin role
+3️⃣ Returns JWT token
+4️⃣ Token saved in localStorage
+5️⃣ Axios attaches token to API requests
+6️⃣ ProtectedAdmin ensures route security
+7️⃣ Logout clears token
+
+📦 9. Dependencies Required
+npm install axios react-router-dom bootstrap

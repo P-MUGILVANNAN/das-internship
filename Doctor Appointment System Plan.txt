@@ -1,0 +1,288 @@
+User UI – Documentation
+
+Module: Doctor Appointment System (User Interface)
+Tech Stack: React.js, Axios, Context API, React Router DOM, CSS/Bootstrap
+
+🔥 1. Overview
+
+The User UI allows patients to register, login, browse doctors, view details, book appointments, and manage their profile and booking history.
+
+This interface communicates with the backend API using Axios and maintains session with JWT tokens stored in localStorage.
+
+🗂️ 2. Folder Structure (User UI)
+frontend-user/
+│── public/
+│── src/
+│   ├── api/
+│   │   └── axios.js
+│   │
+│   ├── components/
+│   │   ├── Navbar.js
+│   │   ├── Footer.js
+│   │   ├── ProtectedRoute.js
+│   │   └── DoctorCard.js
+│   │
+│   ├── pages/
+│   │   ├── Home.js
+│   │   ├── Login.js
+│   │   ├── Register.js
+│   │   ├── Doctors.js
+│   │   ├── DoctorDetails.js
+│   │   ├── BookAppointment.js
+│   │   ├── Appointments.js
+│   │   └── Profile.js
+│   │
+│   ├── context/
+│   │   └── AuthContext.js
+│   │
+│   ├── utils/
+│   │   └── storage.js
+│   │
+│   ├── App.js
+│   ├── index.js
+│   └── styles/
+│       └── main.css
+│
+└── package.json
+
+🚀 3. Key Features
+✔ User Registration
+✔ User Login (JWT)
+✔ Protected Routes
+✔ View Doctors by specialization
+✔ Detailed Doctor Profile
+✔ Book Appointment
+✔ View Appointment History
+✔ Cancel Appointment
+✔ Update Profile
+✔ Logout
+⚙️ 4. Module Explanation (Step-by-Step)
+4.1 Axios Setup
+
+📌 File: src/api/axios.js
+
+Purpose:
+
+Define API base URL
+
+Add token automatically in headers
+
+4.2 Auth Context
+
+📌 File: src/context/AuthContext.js
+
+Purpose:
+
+Manages login, logout, user state
+
+Stores JWT token
+
+Checks if user is authenticated
+
+Provides functions:
+
+loginUser()
+
+logoutUser()
+
+loadUser()
+
+isAuthenticated
+
+4.3 ProtectedRoute Component
+
+📌 File: src/components/ProtectedRoute.js
+
+Purpose:
+
+Blocks access to protected pages
+
+Redirects unauthenticated users to login
+
+4.4 Navbar Component
+
+Shows links depending on login status:
+
+Home
+
+Doctors
+
+Appointments
+
+Profile
+
+Logout
+
+4.5 Page-by-Page Documentation
+🏠 5. Pages Documentation
+5.1 Home Page
+
+📌 File: pages/Home.js
+
+Description:
+
+Displays banner, features, and call-to-action buttons
+
+Highlights system features
+
+“Book Appointment” button
+
+“View Doctors” button
+
+5.2 Register Page
+
+📌 File: pages/Register.js
+
+Description:
+
+Signup with:
+
+Name
+
+Email
+
+Phone
+
+Password
+
+On successful register → redirect to Login
+
+5.3 Login Page
+
+📌 File: pages/Login.js
+
+Description:
+
+Login with email + password
+
+Stores JWT in localStorage
+
+Redirects to Home page
+
+5.4 Doctors List Page
+
+📌 File: pages/Doctors.js
+
+Description:
+
+Shows list of doctors fetched from API
+
+Filter by specialization
+
+Displays:
+
+Name
+
+Specialization
+
+Experience
+
+Fees
+
+Click → Redirects to DoctorDetails
+
+5.5 Doctor Details Page
+
+📌 File: pages/DoctorDetails.js
+
+Description:
+
+Shows full profile of a single doctor
+
+Available timing slots
+
+“Book Appointment” button
+
+5.6 Book Appointment Page
+
+📌 File: pages/BookAppointment.js
+
+Description:
+
+Select Date
+
+Select Time Slot
+
+Confirm Booking
+
+Sends booking data to backend
+
+Shows success message
+
+5.7 Appointments Page
+
+📌 File: pages/Appointments.js
+
+Description:
+
+Displays user’s appointment history
+
+Appointment list includes:
+
+Doctor name
+
+Date
+
+Time
+
+Status (pending / approved / cancelled)
+
+Cancel appointment button
+
+5.8 Profile Page
+
+📌 File: pages/Profile.js
+
+Description:
+
+Shows current user info
+
+Allows updating:
+
+Name
+
+Phone
+
+Email
+
+API: /api/user/profile
+
+🔄 6. API Calls Summary
+Page	API Call	Method
+Register	/api/auth/register	POST
+Login	/api/auth/login	POST
+Load Profile	/api/user/profile	GET
+Update Profile	/api/user/profile	PUT
+Doctors List	/api/doctors	GET
+Single Doctor	/api/doctors/:id	GET
+Book Appointment	/api/appointments/book	POST
+My Appointments	/api/appointments/user	GET
+Cancel Appointment	/api/appointments/cancel/:id	PUT
+🎨 7. UI/UX Recommendations
+
+Use Bootstrap or Material UI
+
+Use consistent colors & spacing
+
+Keep doctor cards clean and minimal
+
+Keep appointment forms simple
+
+Use toast notifications
+
+🔐 8. Authentication Workflow (User)
+
+1️⃣ User enters login credentials
+2️⃣ Backend verifies + returns JWT
+3️⃣ JWT saved in localStorage
+4️⃣ Axios attaches token in headers
+5️⃣ Protected pages allow access
+6️⃣ Logout clears token
+
+📦 9. Dependencies Required (React)
+npm install axios react-router-dom bootstrap
+
+
+If using context:
+
+npm install uuid

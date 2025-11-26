@@ -1,0 +1,346 @@
+Doctor Appointment System – Backend Documentation
+
+Tech Stack: Node.js, Express.js, MongoDB, Mongoose, JWT, bcrypt
+Roles: User & Admin
+Core Modules: Authentication, Doctor Management, Appointment Management, User Management
+
+🗂️ 1. Backend Folder Structure
+backend/
+│── server.js
+│── package.json
+│── .env
+│
+├── config/
+│   └── db.js
+│
+├── controllers/
+│   ├── authController.js
+│   ├── userController.js
+│   ├── adminController.js
+│   ├── doctorController.js
+│   └── appointmentController.js
+│
+├── middlewares/
+│   ├── authMiddleware.js
+│   └── adminMiddleware.js
+│
+├── models/
+│   ├── User.js
+│   ├── Admin.js
+│   ├── Doctor.js
+│   ├── Appointment.js
+│   └── TokenBlacklist.js (optional logout)
+│
+├── routes/
+│   ├── authRoutes.js
+│   ├── userRoutes.js
+│   ├── adminRoutes.js
+│   ├── doctorRoutes.js
+│   └── appointmentRoutes.js
+│
+└── utils/
+    ├── generateToken.js
+    └── sendEmail.js (optional)
+
+🔧 2. Server Configuration
+File: server.js
+
+Loads environment variables
+
+Connects to MongoDB
+
+Applies global middlewares
+
+Registers API routes
+
+Starts Express server
+
+🧩 3. Config Module
+db.js
+
+Purpose:
+
+Connect to MongoDB using mongoose
+
+Retry logic for failed attempts
+
+🔐 4. Authentication & Authorization
+JWT Authentication
+
+Users & Admins login using JWT
+
+Token stored in client localStorage
+
+Every protected API request must include:
+
+Authorization: Bearer <token>
+
+🔐 4.1 Middlewares
+authMiddleware.js
+
+Used for User authentication.
+
+Responsibilities:
+
+Validate JWT
+
+Extract user ID
+
+Attach user object to req.user
+
+Allow only authenticated users
+
+Used in routes like:
+
+/api/user/profile
+
+/api/appointments/book
+
+adminMiddleware.js
+
+Used for Admin-only access.
+
+Responsibilities:
+
+Validate JWT
+
+Verify the “admin” role
+
+Allow only admins to proceed
+
+Used in:
+
+/api/admin/dashboard
+
+/api/admin/doctor
+
+📦 5. Models Documentation
+5.1 User Model
+
+Fields:
+
+name
+email
+phone
+password (hashed)
+age
+gender
+role = "user"
+createdAt
+
+5.2 Admin Model
+
+Fields:
+
+email
+password (hashed)
+role = "admin"
+createdAt
+
+5.3 Doctor Model
+
+Fields:
+
+name
+email
+specialization
+experience
+fees
+timings
+image
+createdAt
+
+5.4 Appointment Model
+
+Fields:
+
+userId
+doctorId
+date
+time
+status  -> pending | approved | cancelled
+createdAt
+
+🧠 6. Controllers Documentation
+6.1 Auth Controller
+User Registration
+POST /api/auth/register
+
+
+Validates:
+
+name
+
+email
+
+password
+
+phone
+
+Encrypts password with bcrypt → saves user → returns JWT.
+
+User Login
+POST /api/auth/login
+
+
+Checks:
+
+email exists
+
+password matches
+
+returns token + user details
+
+Admin Login
+POST /api/admin/login
+
+
+Separate login for admins.
+
+Validations:
+
+Admin exists
+
+Password correct
+
+JWT returned
+
+6.2 User Controller
+Get User Profile
+GET /api/user/profile
+
+
+Needs authMiddleware
+
+Returns user info
+
+Update User Profile
+PUT /api/user/profile
+
+
+Editable:
+
+name
+
+phone
+
+email
+
+6.3 Doctor Controller
+Get All Doctors
+GET /api/doctors
+
+Get Single Doctor
+GET /api/doctors/:id
+
+Admin – Add Doctor
+POST /api/admin/doctor
+
+Admin – Update Doctor
+PUT /api/admin/doctor/:id
+
+Admin – Delete Doctor
+DELETE /api/admin/doctor/:id
+
+6.4 Appointment Controller
+User – Book Appointment
+POST /api/appointments/book
+
+
+Validations:
+
+Check slot availability
+
+Check doctor exists
+
+Save appointment
+
+User – Get Appointments
+GET /api/appointments/user
+
+User – Cancel Appointment
+PUT /api/appointments/cancel/:id
+
+Admin – View All Appointments
+GET /api/admin/appointments
+
+Admin – Approve Appointment
+PUT /api/admin/appointment/approve/:id
+
+Admin – Reject Appointment
+PUT /api/admin/appointment/reject/:id
+
+6.5 Admin Controller
+Dashboard Stats
+GET /api/admin/dashboard
+
+
+Returns:
+
+totalUsers
+
+totalDoctors
+
+totalAppointments
+
+pendingAppointments
+
+Get All Users
+GET /api/admin/users
+
+Admin Profile
+GET /api/admin/profile
+PUT /api/admin/profile
+
+🔄 7. API Routes Summary
+⭐ User Routes
+Method	Endpoint	Description
+POST	/api/auth/register	User registration
+POST	/api/auth/login	User login
+GET	/api/user/profile	Get user profile
+PUT	/api/user/profile	Update profile
+GET	/api/doctors	View all doctors
+GET	/api/doctors/:id	View doctor details
+POST	/api/appointments/book	Book appointment
+GET	/api/appointments/user	Get user appointments
+PUT	/api/appointments/cancel/:id	Cancel appointment
+⭐ Admin Routes
+Method	Endpoint	Description
+POST	/api/admin/login	Admin login
+GET	/api/admin/dashboard	Dashboard analytics
+GET	/api/admin/users	All registered users
+GET	/api/admin/doctors	All doctors
+POST	/api/admin/doctor	Add doctor
+PUT	/api/admin/doctor/:id	Edit doctor
+DELETE	/api/admin/doctor/:id	Delete doctor
+GET	/api/admin/appointments	All appointments
+PUT	/api/admin/appointment/approve/:id	Approve appointment
+PUT	/api/admin/appointment/reject/:id	Reject appointment
+GET	/api/admin/profile	Admin profile
+PUT	/api/admin/profile	Update admin profile
+🛡️ 8. Security Features
+
+Password encryption using bcryptjs
+
+JWT-based secure authentication
+
+Protected routes for user/admin
+
+Role-based access control
+
+Validation for duplicate users/admins
+
+Appointment conflict check
+
+🔐 9. Environment Variables (.env)
+PORT=5000
+MONGO_URI=mongodb+srv://...
+JWT_SECRET=your_jwt_secret
+CORS_ORIGIN=http://localhost:3000
+
+🛠️ 10. Install & Run
+Install dependencies:
+npm install
+
+Start server:
+npm start

@@ -1,0 +1,353 @@
+API — Doctor Appointment System (MERN)
+
+Base URL (local dev)
+http://localhost:5000/api
+
+Auth
+All protected endpoints require header:
+
+Authorization: Bearer <JWT_TOKEN>
+
+
+Tokens are issued on successful login/registration and expire per JWT_SECRET config (example: 30d).
+
+Contents
+
+Authentication (Auth)
+
+User
+
+Admin
+
+Doctors
+
+Appointments
+
+Common error format & status codes
+
+Examples (cURL + Notes)
+
+1. Authentication (Auth)
+POST /api/auth/register
+
+Create new user.
+
+Request Body
+
+{
+  "name": "Arun Kumar",
+  "email": "arun@gmail.com",
+  "phone": "9876543210",
+  "password": "Arun@123",
+  "age": 24,
+  "gender": "male"
+}
+
+
+Success (201)
+
+{
+  "message": "Registration successful",
+  "token": "<jwt_token>",
+  "user": { "_id": "...", "name": "Arun Kumar", "email": "...", "phone":"...", "age":24, "gender":"male", "role":"user", "createdAt":"..." }
+}
+
+
+Errors
+
+400 missing fields / email already registered
+
+500 server error
+
+POST /api/auth/login
+
+User login.
+
+Request Body
+
+{
+  "email": "arun@gmail.com",
+  "password": "Arun@123"
+}
+
+
+Success (200)
+
+{
+  "message": "Login successful",
+  "token": "<jwt_token>",
+  "user": { "_id":"...", "name":"Arun Kumar", "email":"...", "role":"user" }
+}
+
+
+Errors
+
+400 missing credentials / invalid password
+
+404 user not found
+
+POST /api/auth/admin/login
+
+Admin login (separate endpoint).
+
+Request Body
+
+{ "email": "admin@gmail.com", "password": "Admin@123" }
+
+
+Success (200)
+
+{
+  "message": "Admin login successful",
+  "token": "<jwt_token>",
+  "admin": { "_id":"...", "email":"admin@gmail.com", "role":"admin" }
+}
+
+
+Errors
+
+400 missing credentials
+
+404 admin not found
+
+400 invalid password
+
+2. User Endpoints
+
+Protected: require Authorization: Bearer <token> (user or admin token accepted by protect middleware)
+
+GET /api/user/profile
+
+Get currently authenticated user profile.
+
+Success (200)
+
+{ "user": { "_id":"...", "name":"...", "email":"...", "phone":"...", "age":24, "gender":"male" } }
+
+PUT /api/user/profile
+
+Update user profile.
+
+Request Body (any subset)
+
+{ "name":"New Name", "phone":"9999999999", "age":25, "gender":"other" }
+
+
+Success (200)
+
+{ "message":"Profile updated successfully", "user": { ...updated user object... } }
+
+
+Errors
+
+401 not authorized / token missing
+
+400 validation errors
+
+3. Admin Endpoints
+
+Protected: protect + adminOnly (admin token required)
+
+GET /api/admin/dashboard
+
+Get analytics for dashboard.
+
+Success (200)
+
+{
+  "totalUsers": 20,
+  "totalDoctors": 6,
+  "totalAppointments": 45,
+  "pendingAppointments": 8
+}
+
+GET /api/admin/users
+
+List all users.
+
+Success (200)
+
+{ "users": [ { "_id":"...", "name":"...", "email":"..." }, ... ] }
+
+GET /api/admin/profile
+
+Get admin profile.
+
+Success (200)
+
+{ "admin": { "_id":"...", "email":"admin@gmail.com" } }
+
+PUT /api/admin/profile
+
+Update admin profile (email / password).
+
+Request Body
+
+{ "email": "newadmin@gmail.com", "password": "NewPass@123" }
+
+
+Success (200)
+
+{ "message": "Profile updated successfully" }
+
+4. Doctors Endpoints
+
+Public routes: view doctors.
+Admin routes: add/update/delete (require admin auth).
+
+GET /api/doctors
+
+Get all doctors.
+
+Success (200)
+
+{ "doctors": [ { "_id":"...", "name":"Dr A", "specialization":"Cardiologist", "fees":500, "timings":"10:00 - 14:00" }, ... ] }
+
+GET /api/doctors/:id
+
+Get single doctor details.
+
+Success (200)
+
+{ "doctor": { "_id":"...", "name":"...", "specialization":"...", "experience":10, "fees":500, "timings":"..." } }
+
+POST /api/doctors — Admin only
+
+Add doctor.
+
+Request Body
+
+{
+  "name":"Dr. Rajesh",
+  "email":"rajesh@hospital.com",
+  "specialization":"Cardiologist",
+  "experience":12,
+  "fees":500,
+  "timings":"10:00 AM - 2:00 PM",
+  "image":"https://..."
+}
+
+
+Success (201)
+
+{ "message":"Doctor added successfully", "doctor": { ... } }
+
+PUT /api/doctors/:id — Admin only
+
+Update doctor.
+
+Request Body
+(partial allowed)
+
+{ "fees": 600, "timings":"09:00 AM - 1:00 PM" }
+
+
+Success (200)
+
+{ "message": "Doctor updated successfully", "doctor": { ... } }
+
+DELETE /api/doctors/:id — Admin only
+
+Delete doctor.
+
+Success (200)
+
+{ "message": "Doctor deleted successfully" }
+
+5. Appointments Endpoints
+
+Booking by user (protected). Admin views/manages appointments (admin-only).
+
+POST /api/appointments/book
+
+Book an appointment (user only).
+
+Request Body
+
+{
+  "doctorId": "<doctor_object_id>",
+  "date": "2025-02-01",
+  "time": "11:30 AM"
+}
+
+
+Success (201)
+
+{ "message":"Appointment booked successfully", "appointment": { "_id":"...", "userId":"...", "doctorId":"...", "date":"2025-02-01", "time":"11:30 AM", "status":"pending" } }
+
+
+Notes
+
+Validate slot conflicts on backend (recommended).
+
+Date format: ISO string or YYYY-MM-DD is safer.
+
+GET /api/appointments/user
+
+Get logged-in user's appointments.
+
+Success (200)
+
+{ "appointments": [ { "_id":"...", "doctorId": { "name":"Dr A", "specialization":"..." }, "date":"...", "time":"...", "status":"pending" }, ... ] }
+
+PUT /api/appointments/cancel/:id
+
+Cancel appointment (user owner only).
+
+Success (200)
+
+{ "message":"Appointment cancelled successfully" }
+
+
+Errors
+
+403 unauthorized (not owner)
+
+404 appointment not found
+
+GET /api/appointments — Admin only
+
+List all appointments (admin view).
+
+Success (200)
+
+{ "appointments": [ { "_id":"...", "userId": { "name":"..." }, "doctorId": { "name":"..." }, "status":"pending" }, ... ] }
+
+PUT /api/appointments/approve/:id — Admin only
+
+Approve appointment.
+
+Success (200)
+
+{ "message":"Appointment approved successfully" }
+
+PUT /api/appointments/reject/:id — Admin only
+
+Reject appointment.
+
+Success (200)
+
+{ "message":"Appointment rejected successfully" }
+
+6. Common Error Format & Status Codes
+
+Typical error response
+
+{ "message": "User not found" }
+
+
+Common status codes
+
+200 OK
+
+201 Created
+
+400 Bad Request (validation)
+
+401 Unauthorized (missing/invalid token)
+
+403 Forbidden (role denied)
+
+404 Not Found (resource missing)
+
+500 Server Error
